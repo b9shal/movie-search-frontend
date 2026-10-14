@@ -1,37 +1,55 @@
 "use client";
 
-import { useState } from "react";
+import Form from "next/form";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export function SearchBar() {
-  const [query, setQuery] = useState("");
-
-  // TODO(candidate): wire this up to lib/api.ts's searchMovies() and render results
-  // (with pagination) instead of just logging. See lib/api.ts and app/page.tsx.
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    console.log("TODO: search for", query);
-  }
+function SearchBarInner() {
+  const params = useSearchParams();
+  const query = params.get("query") ?? "";
 
   return (
-    <form onSubmit={handleSubmit} className="flex w-full max-w-md gap-2">
+    <Form
+      action="/search"
+      role="search"
+      aria-label="Search movies"
+      className="flex flex-col gap-2 sm:flex-row"
+    >
       <label htmlFor="movie-search" className="sr-only">
-        Search for a movie
+        Search movies
       </label>
       <input
         id="movie-search"
-        type="search"
         name="query"
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
-        placeholder="Search for a movie…"
-        className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-brand-500 focus:outline-none"
+        type="search"
+        required
+        autoComplete="off"
+        spellCheck={false}
+        defaultValue={query}
+        key={query}
+        placeholder="Search movies… (batman, slow, noresults, error)"
+        className="w-full rounded-md border border-white/15 bg-white/5 px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none"
       />
       <button
         type="submit"
-        className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-500"
+        className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-white/90 focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none"
       >
         Search
       </button>
-    </form>
+    </Form>
+  );
+}
+
+export function SearchBar() {
+  // useSearchParams opts this subtree into CSR. Suspense keeps the rest
+  // of the route (and its RSC payload) server-rendered.
+  return (
+    <Suspense
+      fallback={
+        <div className="h-10 animate-pulse rounded-md bg-white/5" aria-hidden />
+      }
+    >
+      <SearchBarInner />
+    </Suspense>
   );
 }
