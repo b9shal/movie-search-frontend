@@ -1,5 +1,6 @@
 import { respondWithError } from "~/mocks/http";
-import { movies } from "~/mocks/fixures";
+import { movies } from "~/mocks/fixtures";
+import { serializeVideo } from "~/mocks/serializers";
 
 interface MovieVideosRouteContext {
   params: Promise<{ id: string }>;
@@ -30,5 +31,5 @@ export async function GET(
     });
   }
 
-  return Response.json(movie.videos ?? []);
+  return Response.json((movie.videos ?? []).map(serializeVideo));
 }

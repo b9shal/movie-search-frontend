@@ -1,6 +1,7 @@
 import { delay } from "~/lib/utils";
 import { respondWithError } from "~/mocks/http";
-import { movies } from "~/mocks/fixures";
+import { movies } from "~/mocks/fixtures";
+import { serializeMovie } from "~/mocks/serializers";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -65,6 +66,6 @@ export async function GET(request: Request) {
     page,
     totalPages,
     totalResults: results.length,
-    results: results.slice(start, start + pageSize),
+    results: results.slice(start, start + pageSize).map(serializeMovie),
   });
 }

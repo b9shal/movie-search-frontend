@@ -1,5 +1,6 @@
 import { respondWithError } from "~/mocks/http";
-import { movies } from "~/mocks/fixures";
+import { movies } from "~/mocks/fixtures";
+import { serializeMovieDetail } from "~/mocks/serializers";
 
 interface MovieRouteContext {
   params: Promise<{ id: string }>;
@@ -7,8 +8,8 @@ interface MovieRouteContext {
 
 export async function GET(_request: Request, { params }: MovieRouteContext) {
   const { id } = await params;
-
   const movieId = Number(id);
+
   if (!/^\d+$/.test(id) || !Number.isSafeInteger(movieId) || movieId < 1) {
     return respondWithError({
       status: 404,
@@ -27,16 +28,5 @@ export async function GET(_request: Request, { params }: MovieRouteContext) {
     });
   }
 
-  return Response.json({
-    id: movie.id,
-    title: movie.title,
-    overview: movie.overview,
-    posterPath: movie.posterPath,
-    backdropPath: movie.backdropPath,
-    voteAverage: movie.voteAverage,
-    releaseDate: movie.releaseDate,
-    runtime: movie.runtime,
-    tagline: movie.tagline,
-    genres: movie.genres,
-  });
+  return Response.json(serializeMovieDetail(movie));
 }
