@@ -1,12 +1,22 @@
 "use client";
 
 import Form from "next/form";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
 function SearchBarInner() {
-  const params = useSearchParams();
-  const query = params.get("query") ?? "";
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const query = searchParams.get("query") ?? "";
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // e.nativeEvent.inputType is undefined when the native clear button is clicked
+
+    //@ts-expect-error
+    if (e.target.value === "" && !e.nativeEvent.inputType) {
+      router.replace("/");
+    }
+  };
 
   return (
     <Form
@@ -27,7 +37,8 @@ function SearchBarInner() {
         spellCheck={false}
         defaultValue={query}
         key={query}
-        placeholder="Search movies… (batman, slow, noresults, error)"
+        onChange={handleChange}
+        placeholder="Search movies…"
         className="w-full rounded-md border border-white/15 bg-white/5 px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none"
       />
       <button
@@ -41,8 +52,6 @@ function SearchBarInner() {
 }
 
 export function SearchBar() {
-  // useSearchParams opts this subtree into CSR. Suspense keeps the rest
-  // of the route (and its RSC payload) server-rendered.
   return (
     <Suspense
       fallback={
