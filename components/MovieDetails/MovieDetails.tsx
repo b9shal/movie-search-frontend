@@ -1,10 +1,10 @@
 import Image from "next/image";
-import Link from "next/link";
 
-import type { MovieDetail, MovieVideo } from "~/types/movie";
 import { GenrePills } from "~/components/GenrePills";
 import { MovieTrailer } from "~/components/MovieTrailer";
 import { formatMovieRuntime, getYearFromDate } from "~/lib/utils";
+import type { MovieDetail, MovieVideo } from "~/types/movie";
+import { BackButton } from "../BackButton";
 
 interface Props {
   movie: MovieDetail;
@@ -22,12 +22,7 @@ export function MovieDetails({
 
   return (
     <article className="flex flex-col gap-8">
-      <Link
-        href="/"
-        className="w-fit rounded-sm text-sm text-muted transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-400"
-      >
-        <span aria-hidden="true">←</span> Back to movies
-      </Link>
+      <BackButton label="Back" />
 
       <div className="relative isolate overflow-hidden rounded-2xl border border-border bg-surface">
         {movie.backdropPath ? (
